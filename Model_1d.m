@@ -30,6 +30,8 @@ disp(population(patient_zero_coord_y,1))
 
 disp(population)
 
+% todo: wrap code below in loop to go through entire array
+
 % check that patient zero is not the last element in the population array
 % if it is, do not attempt to select that non-existent contact
 if patient_zero_coord_y ~= length(population)
