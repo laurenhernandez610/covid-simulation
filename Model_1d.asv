@@ -8,10 +8,12 @@
 %   calculate percent change that they will infect person2
 % 
 
-% Parameters 
+% Constants
 N = 10;
 infection_rate = .7;
-pandemic_duration = 20;
+pandemic_duration = 80;
+
+
 
 
 population_arr = zeros(N,1);
@@ -37,9 +39,9 @@ disp(population_arr)
 for i = 1:pandemic_duration
         disp('i:')
         disp(i)
-    for j = 1:length(population_arr)
-            disp('j:')
-            disp(j)
+    for k = 1:length(population_arr)
+            disp('k:')
+            disp(k)
         % check that patient zero is not the last element in the population array
         % if it is, do not attempt to select that non-existent contact
         if k ~= length(population_arr)
@@ -89,6 +91,6 @@ total_infected = sum(population_arr(:) == 1);
        disp('Total Infected:')
        disp(total_infected)
        disp('Array Length')
-       disp(size(population_arr))
+       disp(sum(population_arr))
 
 
