@@ -32,7 +32,8 @@ disp(population_arr(k,1))
 disp('pop arr')
 disp(population_arr)
 
-% todo: wrap code below in loop to go through entire array
+% todo: wrap code below in loop to go through entire array in order to simulate the infection spread across 
+% a population
 
 for i = 1:pandemic_duration
         disp('i:')
