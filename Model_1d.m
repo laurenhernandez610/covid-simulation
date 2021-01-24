@@ -11,7 +11,6 @@ clear all;
  
  % ------LEFT TO FIX------
  % Iterate from patient zero's position
- % Repeat ^ for other columns
  % Add each iteration to an output vector
  % Fix line 136
  
@@ -32,10 +31,10 @@ step_size = (pandemic_duration/deltaT);          % Step size for each iteration
 % ------IMPACT PARAMETERS------
 
 impact_parameters = 0;                           % Including/excluding impact parameters 
-masks = 0;                                       % Masks worn = 0 , No masks = 1
+masks = 1;                                       % Masks worn = 0 , No masks = 1
 social_distancing = 0;                           % Social distancing = 0 , No social distancing = 1
-sanitary_practices = 0;                          % Handwashing = 0 , No handwashing = 1
-gathering_environment = 0;                       % Outdoors = 0 , Indoors = 1
+sanitary_practices = 1;                          % Handwashing = 0 , No handwashing = 1
+gathering_environment = 0;                       % Outdoors = 0 , Indoors
 
 
 if impact_parameters == 1
@@ -77,17 +76,20 @@ population_array = zeros(N,1);                         % Setting up the size of 
 disp('Population Size:');                               % Everyone in the city is not_infected = 0 
 disp(population_array);
 
-k = randsample(N,1);                                    % Grabbing a random individual from the city
+patient_zero = Carrier;
+patient_zero_pos = randsample(N,1);                                   % Grabbing a random individual from the city
+patient_zero.location = patient_zero_pos;
+patient_zero.infected = 1;
 disp('Patient Zero position in City A:')                % First random individual = 'patient zero'; ALSO too many k's wtf
-disp(k)
+disp(patient_zero)
 
-status = population_array(k,1);                        % Checking the health status of patient zero
+status = population_array(patient_zero,1);                        % Checking the health status of patient zero
 disp('Initial Health Status of Patient Zero:')          % At t = 0, patient zero is not_infected = 0
 disp(status)
 
-population_array(k,1) = 1;                             % Kickstarting the pandemic
+population_array(patient_zero,1) = 1;                             % Kickstarting the pandemic
 disp('Unfortunate Health Status of Patient Zero:');     % Setting patient zero health status to infected = 1
-disp(population_array(k,1))
+disp(population_array(patient_zero,1))
 disp('Population After Initial Infection:')
 disp(population_array)
 
@@ -105,28 +107,27 @@ for i = 1:step_size
              disp('Node being assesed:')                   % we need to iterate from position of patient_zero and spread out that way
              disp(j)
         
-            if k ~= 1                                      % check that patient zero is not the first element in the population array
-                %contact_1 = population((k - 1),1);        % if it is, do not attempt to select that non-existent contact
-                contact_1 = k - 1;                         % PROBLEM HERE: ONLY MOVES UP BY 1, referencing the wrong way
+            if patient_zero.location ~= 1                                      % check that patient zero is not the first element in the population array
+                contact_1 = patient_zero - 1;                         % PROBLEM HERE: ONLY MOVES UP BY 1, referencing the wrong way
                 disp('Location of Contact Above:')
                 disp(contact_1)
             else
-                contact_1 = length(population_array);      % If patient zero is at top of the array, the loop goes to the bottom of the array
+                contact_1 = length(population_array);      % If patient zero is at top of the array, the loop goes to the bottom of the array TODO
             end
 
             infection_chanceA = rand();                    % calculate random chance that contact_1 becomes infected by patient_zero
-            if infection_chanceA >= infection_rate               
+            if infection_chanceA >= infection_rate && contact_1 ~= 1              
                 population_array((contact_1),1) = 1;      
                 disp('Contact Above After Infection:')
-                disp(population_array(k,1))  
+                disp(population_array((contact_1),1))  
             else
                 disp('{ Contact Above Not Infected }')
                 disp(blanks(1))
                 disp(blanks(1))
             end
 
-            if k ~= length(population_array)               % check that patient zero is not the last element in the population array
-                contact_2 = k + 1;                         % if it is, do not attempt to select that non-existent contact
+            if patient_zero ~= length(population_array)               % check that patient zero is not the last element in the population array
+                contact_2 = patient_zero + 1;                         % if it is, do not attempt to select that non-existent contact
                 disp('Location of Contact Below:')         % PROBLEM HERE: ONLY MOVES DOWN BY 1; referencing the wrong way
                 disp(contact_2)
             else 
@@ -134,7 +135,7 @@ for i = 1:step_size
             end
 
             infection_chanceB = rand();                    % calculate random chance that contact_2 becomes infected by patient_zero
-            if infection_chanceB >= infection_rate
+            if infection_chanceB >= infection_rate && contact_2 ~= 1
                 population_array((contact_2),1) = 1;       % error here --- sometimes unrecognizable 'Index in position 1 is invalid. Array indices must be positive integers or logical values.'
                 disp('Contact Below After Infection')
                 disp(population_array((contact_2),1))  
@@ -142,13 +143,12 @@ for i = 1:step_size
                  disp('{ Contact Below Not Infected }')
                  disp(blanks(1))
                  disp(blanks(1))
-            end
-
+            end   
+            
             disp('Final state of population')
             disp(population_array)
-            
-            
     end 
+
 end
 
 
